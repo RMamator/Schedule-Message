@@ -1,4 +1,19 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.3.0'
+    }
+}
+
 apply plugin: 'com.android.application'
+apply plugin: 'jacoco'
+
+def coverageSourceDirs = [
+        '/Users/ratulaggarwal/AndroidStudioProjects/ScheduleMessage/app/src/main/java'
+]
 
 android {
     compileSdkVersion 23
@@ -10,20 +25,65 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        testHandleProfiling true
+        testFunctionalTest true
     }
     buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        debug {
+            apply plugin: 'sonar'
+            proguardFile 'proguard-rules.txt'
+            debuggable true
+            testCoverageEnabled = true
+
         }
+    }
+
+    buildTypes {
+        debug {
+            testCoverageEnabled false
+        }
+    }
+
+    jacoco {
+        version "0.7.1.201405082137"
     }
 }
 
-repositories { mavenCentral()
+task jacocoTestReport(type:JacocoReport, dependsOn: "testDebug") {
+    group = "Reporting"
+
+    description = "Generate Jacoco coverage reports"
+
+    classDirectories = fileTree(
+            dir: '/Users/ratulaggarwal/AndroidStudioProjects/ScheduleMessage/app/build/intermediates/classes/debug',
+            excludes: ['**/R.class',
+                       '**/R$*.class',
+                       '**/*$ViewInjector*.*',
+                       '**/BuildConfig.*',
+                       '**/Manifest*.*']
+    )
+
+    additionalSourceDirs = files(coverageSourceDirs)
+    sourceDirectories = files(coverageSourceDirs)
+    executionData = files('/Users/ratulaggarwal/AndroidStudioProjects/ScheduleMessage/app/build/jacoco/testDebug.exec')
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+}
+
+repositories {
+    mavenCentral()
+
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.facebook.android:facebook-android-sdk:4.5.0'
+    androidTestCompile('junit:junit:4.11') {
+        exclude module: 'hamcrest-core'
+    }
 }

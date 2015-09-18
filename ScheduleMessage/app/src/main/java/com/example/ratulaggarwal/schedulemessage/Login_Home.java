@@ -7,14 +7,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-
-import java.security.Signature;
 
 
 /**
@@ -24,7 +24,9 @@ public class Login_Home extends Activity {
 
     LoginButton loginbutton;
     CallbackManager callbackManager;
-    Signature signature;
+    AccessTokenTracker accessTokenTracker;
+    AccessToken accessToken, oldaccesstoken;
+    Intent newmessage = new Intent("com.example.ratulaggarwal.schedulemessage.NEWMESSAGE");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +49,11 @@ public class Login_Home extends Activity {
         loginbutton.setReadPermissions("user_friends");
 
         loginbutton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+
             @Override
             public void onSuccess(LoginResult loginResult) {
+                oldaccesstoken = loginResult.getAccessToken();
                 Toast.makeText(getApplicationContext(), "We are in.", Toast.LENGTH_LONG).show();
-                Intent newmessage = new Intent("com.example.ratulaggarwal.schedulemessage.NEWMESSAGE");
                 startActivity(newmessage);
             }
 
@@ -71,14 +74,44 @@ public class Login_Home extends Activity {
             }
         });
 
+        accessToken = AccessToken.getCurrentAccessToken();
+
+        accessTokenTracker = new AccessTokenTracker() {
+
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+                currentAccessToken = accessToken;
+                oldAccessToken = oldaccesstoken;
+                tracker(currentAccessToken, oldAccessToken);
+            }
+        };
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        System.out.println(requestCode);
+/*        System.out.println(requestCode);
         System.out.println(resultCode);
-        System.out.println(data);
+        System.out.println(data);  */
         callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        tracker(oldaccesstoken, accessToken);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        tracker(oldaccesstoken, accessToken);
+    }
+
+    public void tracker(AccessToken old, AccessToken current){
+        if(current == old){
+            startActivity(newmessage);
+        }
     }
 }

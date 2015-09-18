@@ -54,6 +54,7 @@
             android:id="@+id/layout_addimage"
             android:layout_below="@id/layout_message"
             android:layout_margin="10dp"
+            android:background="@drawable/addimageborder"
             >
 
             <TextView
@@ -66,34 +67,25 @@
                 />
 
         </LinearLayout>
-        <!--LinearLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="25"
-            android:orientation="horizontal"
-            android:id="@+id/layout_datentime"
+            android:orientation="vertical"
+            android:id="@+id/layout_checkbox"
             android:layout_below="@id/layout_addimage"
             android:layout_margin="10dp"
-            android:weightSum="100"
             >
-
-            <fragment
-                android:layout_width="0dp"
-                android:layout_weight="50"
-                android:layout_height="wrap_content"
-                android:name="com.example.ratulaggarwal.schedulemessage.DatePickerFragment"
-                android:id="@+id/datepicker_fragment"
-                tools:layout="@layout/datepickerfragment" />
-
-            <fragment
-                android:layout_width="0dp"
-                android:layout_weight="50"
-                android:layout_height="wrap_content"
-                android:name="com.example.ratulaggarwal.schedulemessage.TimePickerFragment"
-                android:id="@+id/timepicker_fragment"
-                tools:layout="@layout/timepickerfragment" />
-
-        </LinearLayout-->
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="Check to send it Later."
+                android:textSize="20dp"
+                android:id="@+id/checkboxsendlater"
+                android:onClick="onCheckboxClicked"
+                />
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -109,7 +101,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="Save / Send"
+            android:text="Send"
             android:id="@+id/buttonsave"
             />
 
